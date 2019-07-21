@@ -1,5 +1,7 @@
 package auctionsniper;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
@@ -21,6 +23,9 @@ public final class Main {
   public static final String AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RESOURCE;
 
   public static final String MAIN_WINDOW_NAME = "Auction Sniper";
+
+  public static final String JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;";
+  public static final String BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;";
 
   private MainWindow ui;
 
@@ -45,6 +50,7 @@ public final class Main {
   }
 
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
+    this.disconnectWhenUICloses(connection);
     final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), new MessageListener() {
       @Override
       public void processMessage(Chat chat, Message message) {
@@ -59,7 +65,16 @@ public final class Main {
 
     this.notToBeGCd = chat;
 
-    chat.sendMessage(new Message());
+    chat.sendMessage(JOIN_COMMAND_FORMAT);
+  }
+
+  private void disconnectWhenUICloses(final XMPPConnection connection) {
+    ui.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosed(WindowEvent e) {
+        connection.disconnect();
+      }
+    });
   }
 
   private static String auctionId(String itemId, XMPPConnection connection) {
@@ -69,7 +84,6 @@ public final class Main {
   private static XMPPConnection connection(String hostname, String username, String password) throws XMPPException {
     XMPPConnection connection = new XMPPConnection(hostname);
     connection.connect();
-
     connection.login(username, password, AUCTION_RESOURCE);
 
     return connection;
