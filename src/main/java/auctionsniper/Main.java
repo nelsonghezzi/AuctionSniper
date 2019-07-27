@@ -7,12 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.SwingUtilities;
 
 import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
 
-public final class Main {
+public final class Main implements AuctionEventListener {
   private static final int ARG_HOSTNAME = 0;
   private static final int ARG_USERNAME = 1;
   private static final int ARG_PASSWORD = 2;
@@ -51,17 +49,9 @@ public final class Main {
 
   private void joinAuction(XMPPConnection connection, String itemId) throws XMPPException {
     this.disconnectWhenUICloses(connection);
-    final Chat chat = connection.getChatManager().createChat(auctionId(itemId, connection), new MessageListener() {
-      @Override
-      public void processMessage(Chat chat, Message message) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ui.showStatus(MainWindow.STATUS_LOST);
-          }
-        });
-      }
-    });
+    final Chat chat = connection.getChatManager().createChat(
+      auctionId(itemId, connection),
+      new AuctionMessageTranslator(this));
 
     this.notToBeGCd = chat;
 
@@ -87,5 +77,15 @@ public final class Main {
     connection.login(username, password, AUCTION_RESOURCE);
 
     return connection;
+  }
+
+  @Override
+  public void auctionClosed() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        ui.showStatus(MainWindow.STATUS_LOST);
+      }
+    });
   }
 }
