@@ -56,6 +56,7 @@ public final class Main {
 
     chat.addMessageListener(
       new AuctionMessageTranslator(
+        connection.getUser(),
         new AuctionSniper(
           auction,
           new SniperStateDisplayer())));
@@ -99,6 +100,11 @@ public final class Main {
     @Override
     public void sniperWinning() {
       this.showStatus(MainWindow.STATUS_WINNING);
+    }
+
+    @Override
+    public void sniperWon() {
+      this.showStatus(MainWindow.STATUS_WON);
     }
 
     private void showStatus(final String status) {

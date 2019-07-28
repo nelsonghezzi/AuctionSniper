@@ -35,6 +35,14 @@ public class ApplicationRunner {
     this.driver.showSniperStatus(MainWindow.STATUS_LOST);
   }
 
+  public void hasShownSniperIsWinning() {
+    this.driver.showSniperStatus(MainWindow.STATUS_WINNING);
+  }
+
+  public void showsSniperHasWonAuction() {
+    this.driver.showSniperStatus(MainWindow.STATUS_WON);
+  }
+
   public void stop() {
     if (driver != null) {
       driver.dispose();
