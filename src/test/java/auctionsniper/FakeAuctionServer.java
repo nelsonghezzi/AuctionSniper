@@ -59,7 +59,7 @@ public class FakeAuctionServer {
   }
 
   public void announceClosed() throws XMPPException {
-    this.currentChat.sendMessage(new Message());
+    this.currentChat.sendMessage("SOLVersion: 1.1; Event: CLOSE;");
   }
 
   public String getItemId() {
