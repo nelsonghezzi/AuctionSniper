@@ -58,6 +58,7 @@ public final class Main {
       new AuctionMessageTranslator(
         connection.getUser(),
         new AuctionSniper(
+          itemId,
           auction,
           new SniperStateDisplayer())));
 
@@ -88,7 +89,7 @@ public final class Main {
   public class SniperStateDisplayer implements SniperListener {
 
     @Override
-    public void sniperBidding() {
+    public void sniperBidding(final SniperState state) {
       this.showStatus(MainWindow.STATUS_BIDDING);
     }
 

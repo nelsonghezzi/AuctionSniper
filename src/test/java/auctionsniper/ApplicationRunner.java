@@ -6,9 +6,13 @@ public class ApplicationRunner {
   public final static String XMPP_HOSTNAME = "localhost";
   public final static String SNIPER_XMPP_ID = "sniper@localhost/Auction";
 
+  private String itemId;
+
   private AuctionSniperDriver driver;
 
   public void startBiddingIn(final FakeAuctionServer auction) {
+    this.itemId = auction.getItemId();
+
     Thread thread = new Thread("Test Application") {
       @Override
       public void run() {
@@ -24,23 +28,23 @@ public class ApplicationRunner {
     thread.start();
 
     driver = new AuctionSniperDriver(1000);
-    driver.showSniperStatus(MainWindow.STATUS_JOINING);
+    driver.showSniperStatus(this.itemId, 0, 0, MainWindow.STATUS_JOINING);
   }
 
-  public void hasShownSniperIsBidding() {
-    this.driver.showSniperStatus(MainWindow.STATUS_BIDDING);
+  public void hasShownSniperIsBidding(int lastPrice, int lastBid) {
+    this.driver.showSniperStatus(this.itemId, lastPrice, lastBid, MainWindow.STATUS_BIDDING);
   }
 
-  public void showsSniperHasLostAuction() {
-    this.driver.showSniperStatus(MainWindow.STATUS_LOST);
+  public void showsSniperHasLostAuction(int lastPrice, int lastBid) {
+    this.driver.showSniperStatus(this.itemId, lastPrice, lastBid, MainWindow.STATUS_LOST);
   }
 
-  public void hasShownSniperIsWinning() {
-    this.driver.showSniperStatus(MainWindow.STATUS_WINNING);
+  public void hasShownSniperIsWinning(int winningBid) {
+    this.driver.showSniperStatus(this.itemId, winningBid, winningBid, MainWindow.STATUS_WINNING);
   }
 
-  public void showsSniperHasWonAuction() {
-    this.driver.showSniperStatus(MainWindow.STATUS_WON);
+  public void showsSniperHasWonAuction(int lastPrice) {
+    this.driver.showSniperStatus(this.itemId, lastPrice, lastPrice, MainWindow.STATUS_WON);
   }
 
   public void stop() {
